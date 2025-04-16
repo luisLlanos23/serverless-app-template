@@ -1,4 +1,4 @@
-resource "kubernetes_service_v1" "function_ifc_element_extractor_service" {
+resource "kubernetes_service_v1" "serverless_app_template_service" {
   metadata {
     name      = "serverless-app-template"
     namespace = "templates"
