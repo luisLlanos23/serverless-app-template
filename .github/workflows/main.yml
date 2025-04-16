@@ -34,7 +34,7 @@ jobs:
       - name: Build, tag and push lambda image
         id: build-image-lambda
         env:
-          IMAGE_NAME: lambda-template
+          IMAGE_NAME: serverless-app-template
           IMAGE_TAG: lambda
         run: |
           cd ./application
@@ -46,7 +46,7 @@ jobs:
       - name: Build, tag and push task image
         id: build-image-task
         env:
-          IMAGE_NAME: task-template
+          IMAGE_NAME: serverless-app-template
           IMAGE_TAG: task
         run: |
           cd ./application
