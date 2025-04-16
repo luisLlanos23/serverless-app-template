@@ -5,7 +5,7 @@ resource "kubernetes_config_map_v1" "serverless_app_template_config_map" {
   }
 
   data = {
-    TOKEN_SECRET = "${var.env_vars.TOKEN_SECRET}"
+    TOKEN_SECRET = "${var.env_vars.SECRET_TOKEN}"
     CLOUD_ACCESS = <<EOT
     {
       "AWS_REGION": "${var.env_vars.AWS_REGION}",
