@@ -1,0 +1,54 @@
+name: Build and Deploy Serverless App Template
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push_to_registry:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
+    env:
+      DOCKER_REPO: luisllanos
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Validate Docker Hub credentials
+        run: |
+          echo "user: ${{ secrets.DOCKER_USERNAME && 'ok' || 'missing' }}"
+          echo "Token: ${{ secrets.DOCKER_PASSWORD && 'ok' || 'missing' }}"
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build, tag and push lambda image
+        id: build-image-lambda
+        env:
+          IMAGE_NAME: lambda-template
+          IMAGE_TAG: lambda
+        run:
+          docker build -t $IMAGE_NAME:$IMAGE_TAG --target lambda .
+          docker tag $IMAGE_NAME:$IMAGE_TAG $DOCKER_REPO/$IMAGE_NAME:$IMAGE_TAG
+          docker push $DOCKER_REPO/$IMAGE_NAME:$IMAGE_TAG
+          echo "image=$IMAGE_NAME:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Build, tag and push task image
+        id: build-image-task
+        env:
+          IMAGE_NAME: task-template
+          IMAGE_TAG: task
+        run:
+          docker build -t $IMAGE_NAME:$IMAGE_TAG --target task .
+          docker tag $IMAGE_NAME:$IMAGE_TAG $DOCKER_REPO/$IMAGE_NAME:$IMAGE_TAG
+          docker push $DOCKER_REPO/$IMAGE_NAME:$IMAGE_TAG
+          echo "image=$IMAGE_NAME:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
